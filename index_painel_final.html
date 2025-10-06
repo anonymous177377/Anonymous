@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Hacker</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+    }
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+    .login-box, .dashboard {
+      border: 2px solid #00ff00;
+      padding: 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      text-align: center;
+      box-shadow: 0 0 20px #00ff00;
+    }
+    input {
+      margin: 10px;
+      padding: 10px;
+      background: black;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: inherit;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #00ff00;
+      color: black;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #0f0;
+      box-shadow: 0 0 10px #0f0;
+    }
+    .hidden { display: none; }
+    .terminal {
+      background: black;
+      color: #00ff00;
+      padding: 15px;
+      height: 250px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 14px;
+      border: 1px solid #00ff00;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+    h2 { text-shadow: 0 0 10px #00ff00; margin:0 0 10px 0;}
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="center">
+    <div class="login-box" id="loginBox">
+      <h2>🔒 Acesso Restrito</h2>
+      <input type="text" id="user" placeholder="Usuário">
+      <input type="password" id="pass" placeholder="Senha">
+      <button onclick="login()">Entrar</button>
+      <p style="font-size:12px; margin-top:10px;">Digite suas credenciais corretas ⚡</p>
+    </div>
+
+    <div class="dashboard hidden" id="dashboard">
+      <h2>💻 Painel Hacker</h2>
+      <p>Bem-vindo, <span id="username"></span>!</p>
+      <div>
+        <button onclick="puxarDados()">Puxar Dados</button>
+        <button onclick="runCommand('scan')">Rodar Scan</button>
+        <button onclick="runCommand('script')">Executar Script</button>
+      </div>
+      <div class="terminal" id="terminal"></div>
+    </div>
+  </div>
+
+<script>
+// Login
+const FIXED_USER = "RickAlves76";
+const FIXED_PASS = "Rick1604";
+function login() {
+  const user = document.getElementById("user").value;
+  const pass = document.getElementById("pass").value;
+  if(user === FIXED_USER && pass === FIXED_PASS){
+    document.getElementById("username").textContent = user;
+    document.getElementById("loginBox").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+    startTerminal();
+  } else {
+    alert("Acesso Negado ❌");
+  }
+}
+
+function startTerminal() {
+  const terminal = document.getElementById("terminal");
+  const msgs = [
+    ">> Conexão estabelecida...",
+    ">> Acesso autorizado...",
+    ">> Painel pronto para uso."
+  ];
+  let i=0;
+  function typeMsg(){
+    if(i<msgs.length){
+      terminal.innerHTML += msgs[i] + "\n";
+      terminal.scrollTop = terminal.scrollHeight;
+      i++;
+      setTimeout(typeMsg,500);
+    }
+  }
+  typeMsg();
+}
+
+// Função de comandos
+function runCommand(type){
+  const terminal = document.getElementById("terminal");
+  let output="";
+  if(type==='scan'){
+    output=">> Rodando scan de rede...\n>> Host ativo: 192.168.0.1\n>> Host ativo: 192.168.0.45";
+  } else if(type==='script'){
+    output=">> Executando script...\n>> Script finalizado sem erros.";
+  }
+  terminal.innerHTML += output.replace(/\n/g,"<br>") + "<br>";
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// Puxar Dados - abre link
+function puxarDados(){
+  window.open("https://www.vexpainel.com/consultar/","_blank");
+  const terminal = document.getElementById("terminal");
+  terminal.innerHTML += ">> Redirecionando para a página de consulta...<br>";
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// Matrix Rain
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters="アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize=14;
+const columns=Math.floor(canvas.width/fontSize);
+const drops=[];
+for(let x=0;x<columns;x++){drops[x]=1;}
+
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.05)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="#0f0";
+  ctx.font=fontSize+"px monospace";
+  for(let i=0;i<drops.length;i++){
+    const text = letters.charAt(Math.floor(Math.random()*letters.length));
+    ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+    if(drops[i]*fontSize > canvas.height && Math.random()>0.975){drops[i]=0;}
+    drops[i]++;
+  }
+}
+setInterval(draw,33);
+window.addEventListener("resize",()=>{
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
