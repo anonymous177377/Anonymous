@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Painel Hacker</title>
+<style>
+    body {
+        margin: 0;
+        background: black;
+        color: #0f0;
+        font-family: "Courier New", monospace;
+        overflow: hidden;
+    }
+
+    #login-screen {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+    }
+
+    #login-screen input {
+        background: transparent;
+        border: 1px solid #0f0;
+        color: #0f0;
+        padding: 10px;
+        margin: 5px;
+        width: 220px;
+        text-align: center;
+    }
+
+    #login-screen button {
+        margin-top: 10px;
+        padding: 10px 25px;
+        background: #0f0;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    #panel {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: none;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .btn {
+        background: transparent;
+        color: #0f0;
+        border: 1px solid #0f0;
+        padding: 10px 20px;
+        cursor: pointer;
+        margin: 10px;
+        display: inline-block;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        background: #0f0;
+        color: black;
+        font-weight: bold;
+    }
+
+    canvas {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -1;
+        background: black;
+    }
+
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<!-- TELA DE LOADING -->
+<div id="loading-screen" style="position:fixed;top:0;left:0;width:100%;height:100%;background:black;color:#0f0;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:20;font-family:'Courier New',monospace;">
+    <h2 id="loading-text">Inicializando sistema...</h2>
+    <p id="loading-progress">0%</p>
+</div>
+
+<div id="login-screen">
+    <h2>ACESSO RESTRITO</h2>
+    <input type="text" id="user" placeholder="Login" />
+    <input type="password" id="pass" placeholder="Senha" />
+    <button onclick="login()">ENTRAR</button>
+</div>
+
+<div id="panel">
+    <h1>PAINEL PRINCIPAL</h1>
+    <button class="btn" onclick="window.location.href='https://www.vexpainel.com/consultar/'">Abrir Link Secreto</button>
+    <button class="btn">Botão 2</button>
+    <button class="btn">Botão 3</button>
+</div>
+
+<script>
+// --- LOADING ANIMADO ---
+let progress = 0;
+const loadingText = document.getElementById("loading-text");
+const loadingProgress = document.getElementById("loading-progress");
+const loadingScreen = document.getElementById("loading-screen");
+
+const loadingInterval = setInterval(() => {
+    progress += Math.floor(Math.random() * 10) + 5;
+    if (progress > 100) progress = 100;
+
+    loadingProgress.innerText = progress + "%";
+
+    const frases = [
+        "Carregando módulos...",
+        "Iniciando firewall quântico...",
+        "Ativando matriz neural...",
+        "Decodificando protocolos...",
+        "Estabelecendo conexão segura..."
+    ];
+
+    loadingText.innerText = frases[Math.floor(Math.random() * frases.length)];
+
+    if (progress === 100) {
+        clearInterval(loadingInterval);
+        setTimeout(() => {
+            loadingScreen.style.opacity = "0";
+            setTimeout(() => loadingScreen.remove(), 1000);
+        }, 500);
+    }
+}, 300);
+
+// som digitação
+const typeSound = new Audio("https://actions.google.com/sounds/v1/foley/typewriter_key.ogg");
+typeSound.volume = 0.5;
+document.addEventListener("keydown", () => {
+    typeSound.currentTime = 0;
+    typeSound.play();
+});
+
+// animação acesso liberado
+function acessoLiberadoAnimacao() {
+    const panel = document.getElementById("panel");
+    panel.style.opacity = 0;
+    panel.style.display = "block";
+    let op = 0;
+    const fade = setInterval(() => {
+        op += 0.05;
+        panel.style.opacity = op;
+        if (op >= 1) clearInterval(fade);
+    }, 30);
+}
+
+// intruso detectado
+function intrusoDetectado() {
+    const tela = document.createElement("div");
+    tela.id = "intruso";
+    tela.style.position = "fixed";
+    tela.style.top = 0;
+    tela.style.left = 0;
+    tela.style.width = "100%";
+    tela.style.height = "100%";
+    tela.style.background = "rgba(255,0,0,0.9)";
+    tela.style.color = "white";
+    tela.style.fontFamily = "Courier New, monospace";
+    tela.style.display = "flex";
+    tela.style.flexDirection = "column";
+    tela.style.justifyContent = "center";
+    tela.style.alignItems = "center";
+    tela.style.fontSize = "40px";
+    tela.style.zIndex = 200;
+    tela.style.animation = "piscar 0.3s infinite alternate";
+    tela.innerHTML = "<b>INTRUSO DETECTADO</b>";
+    document.body.appendChild(tela);
+
+    const beep = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+    beep.volume = 1;
+    beep.play();
+
+    setTimeout(() => tela.remove(), 3000);
+}
+
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes piscar {
+  from { opacity: 1; }
+  to { opacity: 0.3; }
+}`;
+document.head.appendChild(style);
+
+// LOGIN
+function login() {
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+
+    if (user === "RickAlves76" && pass === "04052023") {
+        document.getElementById("login-screen").style.display = "none";
+        acessoLiberadoAnimacao();
+    } else {
+        intrusoDetectado();
+    }
+}
+
+// MATRIX
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = [];
+
+for (let i = 0; i < columns; i++) drops[i] = 1;
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#0f0";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix, 40);
+</script>
+
+</body>
+</html>
